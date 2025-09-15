@@ -1,0 +1,19 @@
+---
+title: "R ggplotly Tutorial"
+---
+
+# What is ggplotly?
+
+The ggplotly() function within Plotly can convert your ggplot2 figures into interactive figures powered by plotly. js, ready for embedding into Dash applications. ggplotly is free and open source and you can view the source, report issues or contribute on GitHub.
+
+Great for presentations!
+
+# Useful links
+
+R-Graph-Gallery: <https://r-graph-gallery.com/index.html>
+
+ggplot2: <https://ggplot2.tidyverse.org/>
+
+R for Data Science: <https://r4ds.had.co.nz/data-visualisation.html>
+
+R statistics: <https://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html>

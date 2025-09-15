@@ -1,0 +1,191 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "R ggplotly Tutorial",
+    "section": "",
+    "text": "What is ggplotly?\nThe ggplotly() function within Plotly can convert your ggplot2 figures into interactive figures powered by plotly. js, ready for embedding into Dash applications. ggplotly is free and open source and you can view the source, report issues or contribute on GitHub.\nGreat for presentations!\n\n\nUseful links\nR-Graph-Gallery: https://r-graph-gallery.com/index.html\nggplot2: https://ggplot2.tidyverse.org/\nR for Data Science: https://r4ds.had.co.nz/data-visualisation.html\nR statistics: https://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\nThis site provides a useful tutorial on how to use ggplot2, plotly, ggplotly and various visualisation forms for several use cases.\nIt provides useful links to established R manuals and helpful code.\nThe tutorial was part of a workshop for Rladies Melbourne in 2025."
+  },
+  {
+    "objectID": "tutorial.html",
+    "href": "tutorial.html",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "",
+    "text": "This workshop introduces ggplotly, which bridges ggplot2 and plotly to create interactive graphics in R.\nYou will learn how to:\n\nStart with basic plots using ggplot2\nAdd interactivity with ggplotly\nExplore case studies (health data, COVID‑19, malaria genomics)\nSave and share interactive plots\n\n\n\n\nThe tutorial is able to run the code as we walk through each step, you can edit and change the code as it suits you.\nThe ggplotly() interactive features do not work in Google Collabs. To see the difference the code will be run and the output will be compared within this presentation."
+  },
+  {
+    "objectID": "tutorial.html#google-collabs",
+    "href": "tutorial.html#google-collabs",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "",
+    "text": "The tutorial is able to run the code as we walk through each step, you can edit and change the code as it suits you.\nThe ggplotly() interactive features do not work in Google Collabs. To see the difference the code will be run and the output will be compared within this presentation."
+  },
+  {
+    "objectID": "tutorial.html#step-1",
+    "href": "tutorial.html#step-1",
+    "title": "R ggplotly Tutorial",
+    "section": "",
+    "text": "#install.packages(\"plotly\")\n#install.packages(\"ggplot2\")\n\n\nlibrary(plotly)\n\nLoading required package: ggplot2\n\n\n\nAttaching package: 'plotly'\n\n\nThe following object is masked from 'package:ggplot2':\n\n    last_plot\n\n\nThe following object is masked from 'package:stats':\n\n    filter\n\n\nThe following object is masked from 'package:graphics':\n\n    layout\n\nlibrary(ggplot2)\n\nLet’s use the basic R dataframe mtcars.\nWhen we generate a ggplot2 scatter plot using mtcars, we get a standard output. But when we use the ggplotly() function, we get an interactive figure.\nThe interactive version allows you to click the legend and turn off certain data points, hover over the points to get the associated values, and zoom in and out of the plot.\n\np &lt;- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +\n  geom_point() +\n  labs(title = \"MPG vs Weight\", color = \"Cylinders\")\n\n# ggplot output\np\n\n\n\n\n\n\n\n# ggplotly interactive output\nggplotly(p)"
+  },
+  {
+    "objectID": "tutorial.html#scatterplots",
+    "href": "tutorial.html#scatterplots",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Scatterplots",
+    "text": "Scatterplots\n\np1 &lt;- ggplot(df, aes(x = age, y = blood_pressure)) +\n  geom_point(alpha = 0.7) +\n  labs(title = \"Age vs Blood Pressure\")\n\nggplotly(p1)\n\n\n\n\n\n\nPurpose: Shows the relationship between two continuous variables (e.g., age vs blood pressure).\nWhy: Helps us see general patterns (e.g., older individuals may have higher blood pressure).\n\nAdd smoking:\n\np2 &lt;- ggplot(df, aes(x = age, y = blood_pressure, color = smoker)) +\n  geom_point(alpha = 0.7) +\n  labs(title = \"Blood Pressure by Age and Smoking\")\n\nggplotly(p2)"
+  },
+  {
+    "objectID": "tutorial.html#multivariate-plot",
+    "href": "tutorial.html#multivariate-plot",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Multivariate Plot",
+    "text": "Multivariate Plot\n\np3 &lt;- ggplot(df, aes(x = age, y = blood_pressure, color = smoker, shape = exercise_level, text = label)) +\n  geom_point(alpha = 0.7) +\n  labs(title = \"Interactive Scatter: Age, BP, Smoking, Exercise\")\n\nggplotly(p3, tooltip = \"text\")\n\n\n\n\n\n\nPurpose: Adds more variables (smoking status, exercise level) using color, shape, or tooltip labels.\n\n\n\nWhy: Real-world health outcomes are influenced by multiple factors, so we want to see how lifestyle intersects with age and blood pressure."
+  },
+  {
+    "objectID": "tutorial.html#box-violin-plots",
+    "href": "tutorial.html#box-violin-plots",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Box & Violin Plots",
+    "text": "Box & Violin Plots\n\np4 &lt;- ggplot(df, aes(x = exercise_level, y = blood_pressure, fill = exercise_level)) +\n  geom_boxplot(alpha = 0.7) +\n  labs(title = \"Blood Pressure by Exercise Level\")\n\nggplotly(p4)\n\n\n\n\n\n\np_violin &lt;- ggplot(df, aes(x = smoker, y = blood_pressure, fill = smoker)) +\n  geom_violin(alpha = 0.6) +\n  geom_boxplot(width = 0.1, fill = \"white\", outlier.shape = NA) +\n  labs(title = \"Distribution of Blood Pressure by Smoking Status\")\n\nggplotly(p_violin)\n\n\n\n\n\n\nPurpose: Summarise the distribution of blood pressure across groups (e.g., smoker vs non-smoker, different exercise levels).\n\n\n\nWhy: Helps compare variability, medians, and outliers between groups. Violin plots additionally show the distribution shape."
+  },
+  {
+    "objectID": "tutorial.html#faceting-by-region",
+    "href": "tutorial.html#faceting-by-region",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Faceting by Region",
+    "text": "Faceting by Region\n\np5 &lt;- ggplot(df, aes(x = age, y = blood_pressure, color = smoker, text = label)) +\n  geom_point(alpha = 0.7) +\n  facet_wrap(~region) +\n  labs(title = \"Blood Pressure by Region\")\n\nggplotly(p5, tooltip = \"text\")\n\n\n\n\n\n\nPurpose: Splits the dataset into subplots (e.g., by region).\n\n\n\nWhy: Allows comparison across categories without overloading a single plot. For example, we can ask: Is the age–blood pressure relationship consistent across rural, suburban, and urban regions?"
+  },
+  {
+    "objectID": "tutorial.html#correlation-heatmap",
+    "href": "tutorial.html#correlation-heatmap",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Correlation Heatmap",
+    "text": "Correlation Heatmap\n\ncorr_data &lt;- df %&gt;% select(age, blood_pressure, bmi, cholesterol)\ncorr_mat &lt;- round(cor(corr_data, use = \"pairwise.complete.obs\"), 2)\nmelted &lt;- melt(corr_mat)\n\np_corr &lt;- ggplot(melted, aes(Var1, Var2, fill = value)) +\n  geom_tile(color = \"white\") +\n  geom_text(aes(label = value)) +\n  scale_fill_gradient2(low = \"blue\", mid = \"white\", high = \"red\", midpoint = 0) +\n  labs(title = \"Correlation Heatmap\")\n\nggplotly(p_corr)\n\n\n\n\n\n\nPurpose: Display pairwise correlations between multiple numeric health indicators (age, blood pressure, BMI, cholesterol).\nWhy: Provides a quick overview of which factors are most strongly related."
+  },
+  {
+    "objectID": "tutorial.html#summary-of-findings-case-study-1",
+    "href": "tutorial.html#summary-of-findings-case-study-1",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Summary of Findings (Case Study 1)",
+    "text": "Summary of Findings (Case Study 1)\n\nBlood pressure tends to increase with age.\nSmokers may have higher blood pressure compared to non-smokers.\nExercise level appears to influence blood pressure distribution (lower in higher exercise groups).\nCorrelation analysis highlights potential links between health indicators (e.g., BMI and blood pressure).\nRegional differences emerge when using facets, suggesting environment also matters."
+  },
+  {
+    "objectID": "tutorial.html#why-use-ggplotly-for-interactivity",
+    "href": "tutorial.html#why-use-ggplotly-for-interactivity",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Why Use ggplotly for Interactivity?",
+    "text": "Why Use ggplotly for Interactivity?\nEnhanced Exploration\n\nHovering shows exact values (age, BP, lifestyle factors).\nTool tips allow inclusion of metadata (subject ID, labels).\n\nData Filtering\n\nLegends are clickable — users can hide/show smokers, exercise levels, or regions.\n\nZoom & Pan\n\nUsers can focus on sub-ranges (e.g., ages 20–40 or BP &gt; 160).\n\nCommunication\n\nInteractive plots are more engaging for teaching, reporting, or sharing with non-technical audiences."
+  },
+  {
+    "objectID": "tutorial.html#advantages-of-these-analyses",
+    "href": "tutorial.html#advantages-of-these-analyses",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Advantages of these Analyses",
+    "text": "Advantages of these Analyses\n\nCapture both overall patterns and group-specific differences.\nCombine exploratory (scatter, violin) and summary (boxplot, heatmap) approaches.\nFacilitate hypothesis generation — e.g., does exercise buffer age-related blood pressure increases?"
+  },
+  {
+    "objectID": "tutorial.html#geographic-spread",
+    "href": "tutorial.html#geographic-spread",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Geographic Spread",
+    "text": "Geographic Spread\n\nstrain_summary &lt;- df %&gt;%\n  group_by(country, strain) %&gt;%\n  summarise(count = n(), latitude = mean(latitude), longitude = mean(longitude), .groups = \"drop\")\n\nplot_geo(strain_summary) %&gt;%\n  add_markers(x = ~longitude, y = ~latitude, size = ~count, color = ~strain,\n              text = ~paste(\"Country:\", country, \"&lt;br&gt;Strain:\", strain, \"&lt;br&gt;Count:\", count),\n              hoverinfo = \"text\") %&gt;%\n  layout(title = \"COVID‑19 Strain Frequency by Country\",\n         geo = list(scope = \"world\", projection = list(type = \"natural earth\")))\n\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\nWarning: `line.width` does not currently support multiple values.\n\n\nWarning in RColorBrewer::brewer.pal(N, \"Set2\"): n too large, allowed maximum for palette Set2 is 8\nReturning the palette you asked for with that many colors\nWarning in RColorBrewer::brewer.pal(N, \"Set2\"): n too large, allowed maximum for palette Set2 is 8\nReturning the palette you asked for with that many colors\n\n\n\n\n\n\n\nPurpose: Visualise where strains occur and how frequently in each country.\nWhy: Shows global spread and geographic hotspots of different strains."
+  },
+  {
+    "objectID": "tutorial.html#time-trends",
+    "href": "tutorial.html#time-trends",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Time Trends",
+    "text": "Time Trends\n\ndf &lt;- df %&gt;% mutate(month = floor_date(as.Date(collection_date), \"month\"))\n\nstrain_trend &lt;- df %&gt;% group_by(month, strain) %&gt;% summarise(count = n(), .groups = \"drop\")\n\ntimeline &lt;- ggplot(strain_trend, aes(x = month, y = count, color = strain)) +\n  geom_line(size = 1) +\n  labs(title = \"Strain Evolution Over Time\")\n\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n\nggplotly(timeline)\n\n\n\n\n\n\nPurpose: Track strain counts over time.\nWhy: Lets us see how specific variants emerge, rise, and decline."
+  },
+  {
+    "objectID": "tutorial.html#relative-proportions",
+    "href": "tutorial.html#relative-proportions",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Relative Proportions",
+    "text": "Relative Proportions\n\nstrain_trend_prop &lt;- df %&gt;%\n  group_by(month) %&gt;% mutate(total = n()) %&gt;%\n  group_by(month, strain) %&gt;% summarise(prop = n()/unique(total), .groups=\"drop\")\n\np_area &lt;- ggplot(strain_trend_prop, aes(x = month, y = prop, fill = strain)) +\n  geom_area(alpha = 0.8) +\n  scale_y_continuous(labels = scales::percent) +\n  labs(title = \"Relative Frequency of Strains Over Time\")\n\nggplotly(p_area)\n\n\n\n\n\n\nPurpose: Show the proportion of each strain at different time points.\n\n\n\nWhy: Easier to see when one strain becomes dominant over others, even if total case numbers vary."
+  },
+  {
+    "objectID": "tutorial.html#phylogenetic-tree",
+    "href": "tutorial.html#phylogenetic-tree",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Phylogenetic Tree",
+    "text": "Phylogenetic Tree\n\nmut_matrix &lt;- dist(df$mutations)\ntree &lt;- nj(mut_matrix)\ntree$tip.label &lt;- df$sample_id\n\nstrain_colors &lt;- scales::hue_pal()(length(unique(df$strain)))\n\nggtree(tree, layout = \"circular\", aes(color = strain)) %&lt;+% df +\n  geom_tree(color = \"gray70\") +\n  geom_tippoint(size = 2) +\n  scale_color_manual(values = strain_colors)\n\n\n\n\n\n\n\n\n\nPurpose: Display genetic relationships between samples.\n\n\n\nWhy: Reveals how strains are related, showing clusters, divergence, and evolutionary history."
+  },
+  {
+    "objectID": "tutorial.html#summary-of-findings-case-study-2",
+    "href": "tutorial.html#summary-of-findings-case-study-2",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Summary of Findings (Case Study 2)",
+    "text": "Summary of Findings (Case Study 2)\n\nDifferent strains are distributed unevenly across the globe.\nSome strains rise quickly over time while others decline.\nDominance shifts are clear when looking at relative proportions (e.g., one variant replaces another).\nPhylogenetic analysis confirms these dynamics, showing how strains diverge from common ancestors."
+  },
+  {
+    "objectID": "tutorial.html#why-use-ggplotly-for-interactivity-1",
+    "href": "tutorial.html#why-use-ggplotly-for-interactivity-1",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Why Use ggplotly for Interactivity?",
+    "text": "Why Use ggplotly for Interactivity?\n\nMaps: Hover to see country, strain, and sample count; zoom to specific regions.\nTimelines: Hover reveals exact counts per strain per month.\nStacked Areas: Clicking legend items lets you isolate or compare particular strains.\nTrees: Tool tips can add sample IDs, making phylogenetics more interpretable."
+  },
+  {
+    "objectID": "tutorial.html#advantages-of-these-analyses-1",
+    "href": "tutorial.html#advantages-of-these-analyses-1",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Advantages of These Analyses",
+    "text": "Advantages of These Analyses\n\nIntegrates epidemiology (spread in space and time) with genomics (strain evolution).\nMakes it easier to communicate both patterns (e.g., global dominance of one strain) and details (e.g., a country-specific outbreak).\nInteractivity allows policymakers, scientists, and the public to explore the data themselves.\nHelps answer complex questions: Where did new strains appear first? How quickly did they spread? How are they genetically related?"
+  },
+  {
+    "objectID": "tutorial.html#distribution-of-fst",
+    "href": "tutorial.html#distribution-of-fst",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Distribution of FST",
+    "text": "Distribution of FST\n\np_fst &lt;- ggplot(genome_data, aes(x = fst)) +\n  geom_histogram(bins = 30, fill = \"steelblue\", alpha = 0.7) +\n  labs(title = \"Distribution of FST Across Genes\")\n\nggplotly(p_fst)\n\n\n\n\n\n\nPurpose: Quantify genetic differences between parasite populations (e.g., across regions or years).\nWhy: Helps identify regions of the genome under selection or where populations are diverging."
+  },
+  {
+    "objectID": "tutorial.html#manhattan-plot",
+    "href": "tutorial.html#manhattan-plot",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Manhattan Plot",
+    "text": "Manhattan Plot\n\np_manhattan &lt;- ggplot(genome_data, aes(x = start, y = fst, color = species, text = gene_id)) +\n  geom_point(alpha = 0.6) +\n  facet_wrap(~chr, scales = \"free_x\") +\n  labs(title = \"FST Across Chromosomes\")\n\nggplotly(p_manhattan, tooltip = \"text\")"
+  },
+  {
+    "objectID": "tutorial.html#circos-plot",
+    "href": "tutorial.html#circos-plot",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Circos Plot",
+    "text": "Circos Plot\n\ngenome_data &lt;- genome_data %&gt;% mutate(sector = paste(species, chr, sep = \"_\"))\nsector_limits &lt;- genome_data %&gt;% group_by(sector) %&gt;% summarise(max_end = max(end), .groups = \"drop\")\n\nplot_circos &lt;- function() {\n  circos.clear()\n  circos.par(start.degree = 90, gap.degree = 5)\n  circos.initialize(factors = sector_limits$sector, xlim = cbind(0, sector_limits$max_end))\n  circos.trackPlotRegion(factors = genome_data$sector, y = genome_data$fst, x = genome_data$start,\n                         ylim = c(0, 1), track.height = 0.1,\n                         panel.fun = function(region, value, ...) {\n                           df &lt;- genome_data %&gt;% filter(sector == CELL_META$sector.index)\n                           circos.rect(xleft = df$start, xright = df$end, ybottom = 0, ytop = df$fst,\n                                       col = \"#1b9e77\", border = NA)\n                           circos.text(CELL_META$xcenter, 1.05, CELL_META$sector.index, cex = 0.4)\n                         })\n}\n\nplot_circos()\n\n\n\n\n\n\n\n\nSimulate some data to illustrate synteny links in the circos plot.\nWe can generate a dataframe with from and to coordinates for each “link” between sectors:\n\nn_links &lt;- 10\nshared_segments &lt;- data.frame(\n  sector1 = sample(sector_limits$sector, n_links, replace = TRUE),\n  start1 = sample(1:1000, n_links),\n  end1   = sample(1001:2000, n_links),\n  sector2 = sample(sector_limits$sector, n_links, replace = TRUE),\n  start2 = sample(1:1000, n_links),\n  end2   = sample(1001:2000, n_links)\n)\n\n\nplot_circos_with_links &lt;- function() {\n  circos.clear()\n  circos.par(start.degree = 90, gap.degree = 5)\n  circos.initialize(factors = sector_limits$sector, xlim = cbind(0, sector_limits$max_end))\n  \n  # Fst track\n  circos.trackPlotRegion(factors = genome_data$sector, y = genome_data$fst, x = genome_data$start,\n                         ylim = c(0, 1), track.height = 0.1,\n                         panel.fun = function(region, value, ...) {\n                           df &lt;- genome_data %&gt;% filter(sector == CELL_META$sector.index)\n                           circos.rect(xleft = df$start, xright = df$end, ybottom = 0, ytop = df$fst,\n                                       col = \"#1b9e77\", border = NA)\n                           circos.text(CELL_META$xcenter, 1.05, CELL_META$sector.index, cex = 0.)\n                         })\n  \n  # Add shared segments as links\n  for(i in 1:nrow(shared_segments)) {\n    if(!any(is.na(shared_segments[i,]))) {\n      circos.link(\n        sector.index1 = shared_segments$sector1[i], \n        point1 = c(shared_segments$start1[i], shared_segments$end1[i]),\n        sector.index2 = shared_segments$sector2[i], \n        point2 = c(shared_segments$start2[i], shared_segments$end2[i]),\n        col = \"#d95f02\", border = NA, lwd = 2\n      )\n    }\n  }\n}\n\nplot_circos_with_links()\n\n\n\n\n\n\n\n\nThis plot now shows “shared segments” that overlap Fst peaks so the Circos plot shows both divergence (Fst) and shared regions.\n\nPurpose: Display similarities and differences between malaria genomes in a circular layout.\nWhy: Makes it easier to see large-scale patterns such as conserved regions and structural variation."
+  },
+  {
+    "objectID": "tutorial.html#linkage-disequilibrium",
+    "href": "tutorial.html#linkage-disequilibrium",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Linkage Disequilibrium",
+    "text": "Linkage Disequilibrium\n\nheatmap.2(ld_matrix, trace = \"none\", col = colorRampPalette(c(\"white\", \"red\"))(100),\n          margins = c(10, 10), key.title = \"LD\", density.info = \"none\",\n          main = \"Linkage Disequilibrium (chr1)\")\n\n\n\n\n\n\n\n\n\nPurpose: Show how variants are correlated with each other across the genome.\nWhy: Provides insight into recombination, selection, and population history."
+  },
+  {
+    "objectID": "tutorial.html#summary-of-findings-case-study-3",
+    "href": "tutorial.html#summary-of-findings-case-study-3",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Summary of Findings (Case Study 3)",
+    "text": "Summary of Findings (Case Study 3)\n\nParasite genomes share many conserved regions but also show population-specific differences.\nFST highlights loci where populations are genetically diverging — potentially due to selection (e.g., drug resistance).\nLD patterns reveal how variants are inherited together, offering clues about recombination rates and selective sweeps.\nFaceting shows that evolutionary dynamics vary across regions and over time, reflecting local epidemiology and interventions."
+  },
+  {
+    "objectID": "tutorial.html#why-use-ggplotly-for-interactivity-2",
+    "href": "tutorial.html#why-use-ggplotly-for-interactivity-2",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Why Use ggplotly for Interactivity?",
+    "text": "Why Use ggplotly for Interactivity?\n\nCircos Plots: Hover over links to identify specific genes or genomic regions.\nFST Plots: Zoom in to regions of high differentiation for closer inspection.\nLD Heatmaps: Hover to see exact LD values between SNP pairs.\nLegends and tool tips make complex genomic visualizations more approachable."
+  },
+  {
+    "objectID": "tutorial.html#advantages-of-these-analyses-2",
+    "href": "tutorial.html#advantages-of-these-analyses-2",
+    "title": "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly",
+    "section": "Advantages of These Analyses",
+    "text": "Advantages of These Analyses\n\nCombines population genetics, evolutionary biology, and visualization in one workflow.\nHelps researchers detect signals of drug resistance, adaptation, and epidemiological shifts.\nInteractivity lowers barriers for exploring high-dimensional genomic data.\nUseful for both hypothesis generation (which genes might be under selection?) and communication (showing resistance hotspots to policymakers)."
+  }
+]

@@ -1,0 +1,608 @@
+---
+title: "Tutorial - Plot Twist: Bringing Your ggplot2 Visuals to Life with ggplotly"
+author: "Dr Kirsty McCann"
+date: "18th September 2025"
+---
+
+# Introduction
+
+This workshop introduces **ggplotly**, which bridges `ggplot2` and `plotly` to create interactive graphics in R.
+
+You will learn how to:
+
+-   Start with basic plots using `ggplot2`
+
+-   Add interactivity with `ggplotly`
+
+-   Explore case studies (health data, COVID‑19, malaria genomics)
+
+-   Save and share interactive plots
+
+------------------------------------------------------------------------
+
+## Google Collabs
+
+The tutorial is able to run the code as we walk through each step, you can edit and change the code as it suits you.
+
+The ggplotly() interactive features do not work in Google Collabs. To see the difference the code will be run and the output will be compared within this presentation.
+
+------------------------------------------------------------------------
+
+# Setup
+
+Install required packages if not already installed:
+
+```{r install_packages}
+
+# Option 1: Install at the same time
+#install.packages(c("plotly", "ggplot2", "readr", "dplyr", "lubridate", "gganimate", "ape", "ggtree", "circlize", "RColorBrewer", "gplots", "reshape2"))
+
+# Option 2: Install seperately
+#install.packages("plotly")
+#install.packages("ggplot2")
+#install.packages("readr")
+#install.packages("dplyr")
+#install.packages("lubridate")
+#install.packages("gganimate")
+#install.packages("ape")
+#install.packages("ggtree")
+#install.packages("reshape2")
+```
+
+Load libraries:
+
+```{r load_package}
+
+library(ggplot2)
+library(plotly)
+library(readr)
+library(dplyr)
+library(lubridate)
+library(gganimate)
+library(ape)
+library(ggtree)
+library(circlize)
+library(RColorBrewer)
+library(gplots)
+library(reshape2)
+
+```
+
+------------------------------------------------------------------------
+
+# Warm‑up Example: mtcars
+
+Let’s begin with the built‑in dataset `mtcars`.
+
+When we create a scatter plot with **ggplot2** using the `mtcars` dataset, we get a static figure. By wrapping the same plot in **`ggplotly()`**, it becomes interactive.
+
+The interactive version lets you explore the data more dynamically: you can click legend items to hide or show categories, hover over points to see their exact values, and zoom or pan within the plot for a closer look.
+
+```{r mtcars}
+
+p <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
+  geom_point() +
+  labs(title = "MPG vs Weight", color = "Cylinders")
+
+# Static
+p
+
+# Interactive
+ggplotly(p)
+
+```
+
+✅ Try hovering over points, clicking legend items, and zooming in!
+
+------------------------------------------------------------------------
+
+# Case Study 1: Health Data
+
+**Research Question**: How does age and lifestyle (e.g., smoking, exercise) influence blood pressure across regions?
+
+```{r load_df}
+
+df <- read.csv("simulated_health_data_with_biomarkers.csv")
+```
+
+## Scatterplots
+
+```{r scatterplot}
+
+p1 <- ggplot(df, aes(x = age, y = blood_pressure)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Age vs Blood Pressure")
+
+ggplotly(p1)
+```
+
+-   **Purpose:** Shows the relationship between two continuous variables (e.g., *age* vs *blood pressure*).
+
+-   **Why:** Helps us see general patterns (e.g., older individuals may have higher blood pressure).
+
+Add smoking:
+
+```{r smoking}
+
+p2 <- ggplot(df, aes(x = age, y = blood_pressure, color = smoker)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Blood Pressure by Age and Smoking")
+
+ggplotly(p2)
+
+```
+
+## Multivariate Plot
+
+```{r multivariate}
+
+p3 <- ggplot(df, aes(x = age, y = blood_pressure, color = smoker, shape = exercise_level, text = label)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Interactive Scatter: Age, BP, Smoking, Exercise")
+
+ggplotly(p3, tooltip = "text")
+
+```
+
+-   **Purpose:** Adds more variables (smoking status, exercise level) using color, shape, or tooltip labels.
+
+<!-- -->
+
+-   **Why:** Real-world health outcomes are influenced by multiple factors, so we want to see how lifestyle intersects with age and blood pressure.
+
+## Box & Violin Plots
+
+```{r box}
+
+p4 <- ggplot(df, aes(x = exercise_level, y = blood_pressure, fill = exercise_level)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Blood Pressure by Exercise Level")
+
+ggplotly(p4)
+
+```
+
+```{r violin}
+
+p_violin <- ggplot(df, aes(x = smoker, y = blood_pressure, fill = smoker)) +
+  geom_violin(alpha = 0.6) +
+  geom_boxplot(width = 0.1, fill = "white", outlier.shape = NA) +
+  labs(title = "Distribution of Blood Pressure by Smoking Status")
+
+ggplotly(p_violin)
+```
+
+-   **Purpose:** Summarise the distribution of blood pressure across groups (e.g., smoker vs non-smoker, different exercise levels).
+
+<!-- -->
+
+-   **Why:** Helps compare variability, medians, and outliers between groups. Violin plots additionally show the *distribution shape*.
+
+## Faceting by Region
+
+```{r facet}
+
+p5 <- ggplot(df, aes(x = age, y = blood_pressure, color = smoker, text = label)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(~region) +
+  labs(title = "Blood Pressure by Region")
+
+ggplotly(p5, tooltip = "text")
+
+```
+
+-   **Purpose:** Splits the dataset into subplots (e.g., by *region*).
+
+<!-- -->
+
+-   **Why:** Allows comparison across categories without overloading a single plot. For example, we can ask: *Is the age–blood pressure relationship consistent across rural, suburban, and urban regions?*
+
+## Correlation Heatmap
+
+```{r heatmap}
+
+corr_data <- df %>% select(age, blood_pressure, bmi, cholesterol)
+corr_mat <- round(cor(corr_data, use = "pairwise.complete.obs"), 2)
+melted <- melt(corr_mat)
+
+p_corr <- ggplot(melted, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = value)) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  labs(title = "Correlation Heatmap")
+
+ggplotly(p_corr)
+
+
+```
+
+-   **Purpose:** Display pairwise correlations between multiple numeric health indicators (age, blood pressure, BMI, cholesterol).
+
+-   **Why:** Provides a quick overview of which factors are most strongly related.
+
+## Summary of Findings (Case Study 1)
+
+-   Blood pressure tends to increase with age.
+
+-   Smokers may have higher blood pressure compared to non-smokers.
+
+-   Exercise level appears to influence blood pressure distribution (lower in higher exercise groups).
+
+-   Correlation analysis highlights potential links between health indicators (e.g., BMI and blood pressure).
+
+-   Regional differences emerge when using facets, suggesting environment also matters.
+
+## Why Use `ggplotly` for Interactivity?
+
+**Enhanced Exploration**
+
+-   Hovering shows exact values (age, BP, lifestyle factors).
+
+-   Tool tips allow inclusion of metadata (subject ID, labels).
+
+**Data Filtering**
+
+-   Legends are clickable — users can hide/show smokers, exercise levels, or regions.
+
+**Zoom & Pan**
+
+-   Users can focus on sub-ranges (e.g., ages 20–40 or BP \> 160).
+
+**Communication**
+
+-   Interactive plots are more engaging for teaching, reporting, or sharing with non-technical audiences.
+
+## Advantages of these Analyses
+
+-   Capture both overall patterns and group-specific differences.
+
+-   Combine exploratory (scatter, violin) and summary (boxplot, heatmap) approaches.
+
+-   Facilitate hypothesis generation — e.g., does exercise buffer age-related blood pressure increases?
+
+------------------------------------------------------------------------
+
+# Case Study 2: COVID-19
+
+**Research Question**: How did COVID‑19 strains spread over geography and time?
+
+```{r load_covid}
+# Load the dataset
+df <- read.csv("simulated_covid_strains.csv")
+rownames(df) <- df$sample_id
+
+glimpse(df)
+summary(df)
+table(df$strain)
+```
+
+## Geographic Spread
+
+```{r strain_summary}
+
+strain_summary <- df %>%
+  group_by(country, strain) %>%
+  summarise(count = n(), latitude = mean(latitude), longitude = mean(longitude), .groups = "drop")
+
+plot_geo(strain_summary) %>%
+  add_markers(x = ~longitude, y = ~latitude, size = ~count, color = ~strain,
+              text = ~paste("Country:", country, "<br>Strain:", strain, "<br>Count:", count),
+              hoverinfo = "text") %>%
+  layout(title = "COVID‑19 Strain Frequency by Country",
+         geo = list(scope = "world", projection = list(type = "natural earth")))
+
+```
+
+-   **Purpose**: Visualise where strains occur and how frequently in each country.
+
+-   **Why**: Shows global spread and geographic hotspots of different strains.
+
+## Time Trends
+
+```{r trends}
+
+df <- df %>% mutate(month = floor_date(as.Date(collection_date), "month"))
+
+strain_trend <- df %>% group_by(month, strain) %>% summarise(count = n(), .groups = "drop")
+
+timeline <- ggplot(strain_trend, aes(x = month, y = count, color = strain)) +
+  geom_line(size = 1) +
+  labs(title = "Strain Evolution Over Time")
+
+ggplotly(timeline)
+
+```
+
+-   **Purpose**: Track strain counts over time.
+
+-   **Why**: Lets us see how specific variants emerge, rise, and decline.
+
+## Relative Proportions
+
+```{r proportions}
+
+strain_trend_prop <- df %>%
+  group_by(month) %>% mutate(total = n()) %>%
+  group_by(month, strain) %>% summarise(prop = n()/unique(total), .groups="drop")
+
+p_area <- ggplot(strain_trend_prop, aes(x = month, y = prop, fill = strain)) +
+  geom_area(alpha = 0.8) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Relative Frequency of Strains Over Time")
+
+ggplotly(p_area)
+```
+
+-   **Purpose**: Show the proportion of each strain at different time points.
+
+<!-- -->
+
+-   **Why**: Easier to see when one strain becomes dominant over others, even if total case numbers vary.
+
+## Phylogenetic Tree
+
+```{r tree}
+
+mut_matrix <- dist(df$mutations)
+tree <- nj(mut_matrix)
+tree$tip.label <- df$sample_id
+
+strain_colors <- scales::hue_pal()(length(unique(df$strain)))
+
+ggtree(tree, layout = "circular", aes(color = strain)) %<+% df +
+  geom_tree(color = "gray70") +
+  geom_tippoint(size = 2) +
+  scale_color_manual(values = strain_colors)
+```
+
+-   **Purpose**: Display genetic relationships between samples.
+
+<!-- -->
+
+-   **Why**: Reveals how strains are related, showing clusters, divergence, and evolutionary history.
+
+## Summary of Findings (Case Study 2)
+
+-   Different strains are distributed unevenly across the globe.
+
+-   Some strains rise quickly over time while others decline.
+
+-   Dominance shifts are clear when looking at relative proportions (e.g., one variant replaces another).
+
+-   Phylogenetic analysis confirms these dynamics, showing how strains diverge from common ancestors.
+
+## Why Use `ggplotly` for Interactivity?
+
+-   **Maps**: Hover to see country, strain, and sample count; zoom to specific regions.
+
+-   **Timelines**: Hover reveals exact counts per strain per month.
+
+-   **Stacked Areas**: Clicking legend items lets you isolate or compare particular strains.
+
+-   **Trees**: Tool tips can add sample IDs, making phylogenetics more interpretable.
+
+## Advantages of These Analyses
+
+-   Integrates epidemiology (spread in space and time) with genomics (strain evolution).
+
+-   Makes it easier to communicate *both patterns* (e.g., global dominance of one strain) and *details* (e.g., a country-specific outbreak).
+
+-   Interactivity allows policymakers, scientists, and the public to explore the data themselves.
+
+-   Helps answer complex questions: *Where did new strains appear first? How quickly did they spread? How are they genetically related?*
+
+------------------------------------------------------------------------
+
+# Case Study 3: Malaria Genomics
+
+**Research Question**: How do malaria parasite genomes differ across species?
+
+```{r load_packages}
+
+#install.packages("circlize")
+library(circlize)
+library(dplyr)
+library(readr)
+library(tibble)
+library(RColorBrewer)
+library(gridGraphics)
+
+```
+
+```{r load_malaria}
+
+genome_data <- read.csv("simulated_malaria_genome_data_with_fst.csv")
+#shared_segments <- read.csv("simulated_malaria_shared_gene_links.csv")
+ld_matrix <- as.matrix(read.csv("simulated_malaria_ld_matrix_chr1.csv", row.names = 1))
+
+# Ensure gene_id is row names of LD matrix
+rownames(ld_matrix) <- colnames(ld_matrix)
+
+dim(ld_matrix)
+```
+
+## Distribution of FST
+
+```{r fst}
+
+p_fst <- ggplot(genome_data, aes(x = fst)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  labs(title = "Distribution of FST Across Genes")
+
+ggplotly(p_fst)
+```
+
+-   **Purpose**: Quantify genetic differences between parasite populations (e.g., across regions or years).
+
+-   **Why**: Helps identify regions of the genome under selection or where populations are diverging.
+
+## Manhattan Plot
+
+```{r manhattan}
+
+p_manhattan <- ggplot(genome_data, aes(x = start, y = fst, color = species, text = gene_id)) +
+  geom_point(alpha = 0.6) +
+  facet_wrap(~chr, scales = "free_x") +
+  labs(title = "FST Across Chromosomes")
+
+ggplotly(p_manhattan, tooltip = "text")
+```
+
+## Circos Plot
+
+```{r circos}
+
+genome_data <- genome_data %>% mutate(sector = paste(species, chr, sep = "_"))
+sector_limits <- genome_data %>% group_by(sector) %>% summarise(max_end = max(end), .groups = "drop")
+
+plot_circos <- function() {
+  circos.clear()
+  circos.par(start.degree = 90, gap.degree = 5)
+  circos.initialize(factors = sector_limits$sector, xlim = cbind(0, sector_limits$max_end))
+  circos.trackPlotRegion(factors = genome_data$sector, y = genome_data$fst, x = genome_data$start,
+                         ylim = c(0, 1), track.height = 0.1,
+                         panel.fun = function(region, value, ...) {
+                           df <- genome_data %>% filter(sector == CELL_META$sector.index)
+                           circos.rect(xleft = df$start, xright = df$end, ybottom = 0, ytop = df$fst,
+                                       col = "#1b9e77", border = NA)
+                           circos.text(CELL_META$xcenter, 1.05, CELL_META$sector.index, cex = 0.4)
+                         })
+}
+
+plot_circos()
+```
+
+Simulate some data to illustrate synteny links in the circos plot.
+
+We can generate a dataframe with `from` and `to` coordinates for each “link” between sectors:
+
+```{r}
+
+n_links <- 10
+shared_segments <- data.frame(
+  sector1 = sample(sector_limits$sector, n_links, replace = TRUE),
+  start1 = sample(1:1000, n_links),
+  end1   = sample(1001:2000, n_links),
+  sector2 = sample(sector_limits$sector, n_links, replace = TRUE),
+  start2 = sample(1:1000, n_links),
+  end2   = sample(1001:2000, n_links)
+)
+
+```
+
+```{r}
+
+plot_circos_with_links <- function() {
+  circos.clear()
+  circos.par(start.degree = 90, gap.degree = 5)
+  circos.initialize(factors = sector_limits$sector, xlim = cbind(0, sector_limits$max_end))
+  
+  # Fst track
+  circos.trackPlotRegion(factors = genome_data$sector, y = genome_data$fst, x = genome_data$start,
+                         ylim = c(0, 1), track.height = 0.1,
+                         panel.fun = function(region, value, ...) {
+                           df <- genome_data %>% filter(sector == CELL_META$sector.index)
+                           circos.rect(xleft = df$start, xright = df$end, ybottom = 0, ytop = df$fst,
+                                       col = "#1b9e77", border = NA)
+                           circos.text(CELL_META$xcenter, 1.05, CELL_META$sector.index, cex = 0.)
+                         })
+  
+  # Add shared segments as links
+  for(i in 1:nrow(shared_segments)) {
+    if(!any(is.na(shared_segments[i,]))) {
+      circos.link(
+        sector.index1 = shared_segments$sector1[i], 
+        point1 = c(shared_segments$start1[i], shared_segments$end1[i]),
+        sector.index2 = shared_segments$sector2[i], 
+        point2 = c(shared_segments$start2[i], shared_segments$end2[i]),
+        col = "#d95f02", border = NA, lwd = 2
+      )
+    }
+  }
+}
+
+plot_circos_with_links()
+
+
+```
+
+This plot now shows **“shared segments” that overlap Fst peaks** so the Circos plot shows both divergence (Fst) and shared regions.
+
+-   **Purpose**: Display similarities and differences between malaria genomes in a circular layout.
+
+-   **Why**: Makes it easier to see large-scale patterns such as conserved regions and structural variation.
+
+## Linkage Disequilibrium
+
+```{r LD}
+
+heatmap.2(ld_matrix, trace = "none", col = colorRampPalette(c("white", "red"))(100),
+          margins = c(10, 10), key.title = "LD", density.info = "none",
+          main = "Linkage Disequilibrium (chr1)")
+```
+
+-   **Purpose**: Show how variants are correlated with each other across the genome.
+
+-   **Why**: Provides insight into recombination, selection, and population history.
+
+## 
+
+## Summary of Findings (Case Study 3)
+
+-   Parasite genomes share many conserved regions but also show population-specific differences.
+
+-   FST highlights loci where populations are genetically diverging — potentially due to selection (e.g., drug resistance).
+
+-   LD patterns reveal how variants are inherited together, offering clues about recombination rates and selective sweeps.
+
+-   Faceting shows that evolutionary dynamics vary across regions and over time, reflecting local epidemiology and interventions.
+
+## Why Use `ggplotly` for Interactivity?
+
+-   **Circos Plots**: Hover over links to identify specific genes or genomic regions.
+
+-   **FST Plots**: Zoom in to regions of high differentiation for closer inspection.
+
+-   **LD Heatmaps**: Hover to see exact LD values between SNP pairs.
+
+-   Legends and tool tips make complex genomic visualizations more approachable.
+
+## Advantages of These Analyses
+
+-   Combines population genetics, evolutionary biology, and visualization in one workflow.
+
+-   Helps researchers detect signals of drug resistance, adaptation, and epidemiological shifts.
+
+-   Interactivity lowers barriers for exploring high-dimensional genomic data.
+
+-   Useful for both hypothesis generation (*which genes might be under selection?*) and communication (*showing resistance hotspots to policymakers*).
+
+------------------------------------------------------------------------
+
+# Wrap‑Up
+
+-   `ggplotly()` turns static `ggplot2` plots into interactive tools.
+
+-   Interactivity enhances exploration, teaching, and storytelling.
+
+-   You can save interactive plots as standalone HTML
+
+```{r widget}
+
+htmlwidgets::saveWidget(ggplotly(p1), "health_plot.html")
+
+```
+
+✅ **Exercise:** Modify one of the plots to use a different dataset, add new variables, or customize tooltips.
+
+------------------------------------------------------------------------
+
+# References/Links
+
+-   [plotly for R](https://plotly.com/r/)
+
+-   [ggplot2 documentation](https://ggplot2.tidyverse.org/)
+
+-   [ggtree](https://yulab-smu.top/treedata-book/)
+
+-   [circlize](https://jokergoo.github.io/circlize_book/)
