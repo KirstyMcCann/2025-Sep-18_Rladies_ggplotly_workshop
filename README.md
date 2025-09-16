@@ -87,4 +87,4 @@ Each case study contains:
       - Callout exercises with expandable solutions
       - Designed for teaching and self-study
 
-🎉**Have fun with ggplotly!**🎉
+🎉 **Have fun with ggplotly!** 🎉
