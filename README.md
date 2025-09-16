@@ -1,4 +1,4 @@
-📊 **Interactive Data Visualization in R with ggplotly**
+📊 **Interactive Data Visualisation in R with ggplotly**
 
 This repository contains a R tutorial that demonstrates how to make your R visualisations interactive using {ggplot2} + {plotly}.
 It is structured as a workshop with case studies, exercises, and solutions.
