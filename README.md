@@ -82,6 +82,9 @@ Each case study contains:
 
 - ✨ Features
 
+🙌 **Credits**
+
+Developed and maintained by Kirsty McCann for teaching interactive data visualisation in R.
       - Hands-on workshop style tutorial
       - Uses {ggplotly} for interactivity
       - Callout exercises with expandable solutions
