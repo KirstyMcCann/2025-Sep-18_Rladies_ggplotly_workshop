@@ -31,18 +31,23 @@ Install required packages if not already installed:
 ```{r install_packages, eval=FALSE}
 
 # Option 1: Install at the same time
-#install.packages(c("plotly", "ggplot2", "readr", "dplyr", "lubridate", "gganimate", "ape", "ggtree", "circlize", "RColorBrewer", "gplots", "reshape2"))
+#install.packages(c("ggplot2", "plotly", "readr", "dplyr", "lubridate", "gganimate", "ape", "ggtree", "RColorBrewer", "gplots", "reshape2","gridGraphics","igraph","ggraph"))
 
 # Option 2: Install seperately
-#install.packages("plotly")
 #install.packages("ggplot2")
+#install.packages("plotly")
 #install.packages("readr")
 #install.packages("dplyr")
 #install.packages("lubridate")
 #install.packages("gganimate")
 #install.packages("ape")
 #install.packages("ggtree")
+#install.packages("RColorBrewer")
+#install.packages("gplots")
 #install.packages("reshape2")
+#install.packages("gridGraphics")
+#install.packages("igraph")
+#install.packages("ggraph")
 ```
 
 Load libraries:
@@ -61,6 +66,8 @@ library(RColorBrewer)
 library(gplots)
 library(reshape2)
 library(gridGraphics)
+library(igraph)
+library(ggraph)
 
 ```
 
@@ -670,6 +677,30 @@ p4_sol <- ggplot(res_trend_recent, aes(x = year, y = resistant_rate,
 ggplotly(p4_sol, tooltip = "text")
 
 ```
+
+   xend = ~x_to, yend = ~y_to,
+    line = list(color = "red", width = 1),
+    hoverinfo = "none"
+  ) %>%
+  add_markers(
+    data = coords_df,
+    x = ~x, y = ~y,
+    color = ~country,
+    text = ~paste("Sample:", sample_id,
+                  "<br>Region:", country,
+                  "<br>Year:", year),
+    hoverinfo = "text",
+    marker = list(size = 10)
+  ) %>%
+  layout(
+    title = "IBD Network Connectivity (2013)",
+    xaxis = list(title = NULL, showgrid = FALSE,
+                 zeroline = FALSE, showticklabels = FALSE),
+    yaxis = list(title = NULL, showgrid = FALSE,
+                 zeroline = FALSE, showticklabels = FALSE)
+  )
+```
+
 
 ## Summary of Findings (Case Study 3)
 
